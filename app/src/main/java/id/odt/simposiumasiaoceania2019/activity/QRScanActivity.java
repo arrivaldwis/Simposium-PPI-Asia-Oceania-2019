@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.Result;
 import com.pixplicity.fontview.FontAppCompatTextView;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.Map;
 import butterknife.BindView;
 import id.odt.simposiumasiaoceania2019.BaseApp;
 import id.odt.simposiumasiaoceania2019.R;
+import id.odt.simposiumasiaoceania2019.util.Util;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 public class QRScanActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler, CompoundButton.OnCheckedChangeListener {
@@ -69,6 +71,7 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
 
     private String action = "registrasi";
     private String nama = "";
+    private MaterialEditText et_lainnya;
 
     private void showDialogAction(String result) {
         Dialog dialog = new Dialog(this);
@@ -78,12 +81,17 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
         RadioButton rb_toilet = dialog.findViewById(R.id.rb_toilet);
         RadioButton rb_sakit = dialog.findViewById(R.id.rb_sakit);
         RadioButton rb_lainnya = dialog.findViewById(R.id.rb_lain);
+        RadioButton rb_makan_siang = dialog.findViewById(R.id.rb_makan_siang);
+        RadioButton rb_makan_malam = dialog.findViewById(R.id.rb_makan_malam);
+        et_lainnya = dialog.findViewById(R.id.et_lainnya);
         LinearLayout btn_submit = dialog.findViewById(R.id.btn_submit);
 
         rb_registrasi.setOnCheckedChangeListener(this);
         rb_toilet.setOnCheckedChangeListener(this);
         rb_sakit.setOnCheckedChangeListener(this);
         rb_lainnya.setOnCheckedChangeListener(this);
+        rb_makan_siang.setOnCheckedChangeListener(this);
+        rb_makan_malam.setOnCheckedChangeListener(this);
 
         BaseApp.db
                 .collection("user")
@@ -104,6 +112,10 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
             pDialog.show();
             btn_submit.setEnabled(false);
 
+            if(action.equals("lainnya")) {
+                action = et_lainnya.getText().toString().toLowerCase();
+            }
+
             Map<String, Object> actions = new HashMap<>();
             actions.put("uid", result);
             actions.put("nama", nama);
@@ -111,25 +123,67 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
             actions.put("panitia_uid", currentUser.getUid());
             actions.put("created_at", System.currentTimeMillis());
 
-            BaseApp.db
-                    .collection("action")
-                    .add(actions)
-                    .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()) {
-                            pDialog.dismiss();
-                            Toast.makeText(QRScanActivity.this, "Perintah berhasil dikirim", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                            finish();
-                        }
-                    });
+            if(action.toLowerCase().contains("makan")) {
+                BaseApp.db
+                        .collection("action")
+                        .whereEqualTo("uid", result)
+                        .whereEqualTo("action", action)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if(task.getResult()!=null) {
+                                if(task.getResult().size()>0) {
+                                    for (DocumentSnapshot documentSnapshot:task.getResult()) {
+                                        long created_at = Long.parseLong(documentSnapshot.getData().get("created_at").toString());
+                                        if(Util.getDate(created_at, "dd/MM/yyyy")
+                                                .equals(Util.getDate(System.currentTimeMillis(), "dd/MM/yyyy"))) {
+                                            Toast.makeText(QRScanActivity.this, "Maaf, peserta telah "+action+" sebelumnya", Toast.LENGTH_LONG).show();
+                                            pDialog.dismiss();
+                                            dialog.dismiss();
+                                            mScannerView.resumeCameraPreview(QRScanActivity.this);
+                                        }
+                                    }
+                                } else {
+                                    addAction(actions);
+                                    dialog.dismiss();
+                                }
+                            } else {
+                                addAction(actions);
+                                dialog.dismiss();
+                            }
+                        });
+            } else {
+                addAction(actions);
+                dialog.dismiss();
+            }
+
+
         });
 
         dialog.show();
     }
 
+    private void addAction(Map<String, Object> actions) {
+        BaseApp.db
+                .collection("action")
+                .add(actions)
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        pDialog.dismiss();
+                        Toast.makeText(QRScanActivity.this, "Perintah berhasil dikirim", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+    }
+
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked)
+        if (isChecked) {
             action = buttonView.getText().toString().toLowerCase();
+            if(action.equals("lainnya")) {
+                et_lainnya.setVisibility(View.VISIBLE);
+            } else {
+                et_lainnya.setVisibility(View.GONE);
+            }
+        }
     }
 }

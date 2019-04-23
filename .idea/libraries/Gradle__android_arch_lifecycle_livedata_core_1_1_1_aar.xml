@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: android.arch.lifecycle:livedata-core:1.1.1@aar">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../../gradle-4.6/caches/transforms-2/files-2.1/731f4e59c2a6be27b981a896300cd56b/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/../../../../gradle-4.6/caches/transforms-2/files-2.1/731f4e59c2a6be27b981a896300cd56b/res" />
+      <root url="jar://$PROJECT_DIR$/../../gradle-4.6/caches/transforms-2/files-2.1/731f4e59c2a6be27b981a896300cd56b/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../gradle-4.6/caches/transforms-2/files-2.1/731f4e59c2a6be27b981a896300cd56b/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../../../../gradle-4.6/caches/modules-2/files-2.1/android.arch.lifecycle/livedata-core/1.1.1/c38818e006ea7a408c05e3090364332d46494ef/livedata-core-1.1.1-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../gradle-4.6/caches/modules-2/files-2.1/android.arch.lifecycle/livedata-core/1.1.1/c38818e006ea7a408c05e3090364332d46494ef/livedata-core-1.1.1-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

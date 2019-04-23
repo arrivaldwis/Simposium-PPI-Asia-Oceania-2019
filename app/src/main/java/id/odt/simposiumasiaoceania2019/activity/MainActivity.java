@@ -155,6 +155,8 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
     ImageView img_logout;
     @BindView(R.id.email_sign_in_button)
     LinearLayout email_sign_in_button;
+    @BindView(R.id.et_lainnya)
+    MaterialEditText et_lainnya;
 
     private ArrayList<String> status = new ArrayList<>();
     private String img_uploaded_url = "";
@@ -198,11 +200,36 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
             rb_perempuan.setOnCheckedChangeListener((buttonView, isChecked) -> gender = "F");
             rb_puasa.setOnCheckedChangeListener((buttonView, isChecked) -> puasa = isChecked);
             rb_vege.setOnCheckedChangeListener((buttonView, isChecked) -> vege = isChecked);
-            rb_kacang.setOnCheckedChangeListener((buttonView, isChecked) -> alergi = "Kacang");
-            rb_telur.setOnCheckedChangeListener((buttonView, isChecked) -> alergi = "Telur");
-            rb_seafood.setOnCheckedChangeListener((buttonView, isChecked) -> alergi = "Seafood");
-            rb_other.setOnCheckedChangeListener((buttonView, isChecked) -> alergi = "Other");
-            rb_tidak_ada.setOnCheckedChangeListener((buttonView, isChecked) -> alergi = "Tidak ada");
+            rb_kacang.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked) {
+                    alergi = "Kacang";
+                    et_lainnya.setVisibility(View.GONE);
+                }
+            });
+            rb_telur.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked) {
+                    alergi = "Telur";
+                    et_lainnya.setVisibility(View.GONE);
+                }
+            });
+            rb_seafood.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked) {
+                    alergi = "Seafood";
+                    et_lainnya.setVisibility(View.GONE);
+                }
+            });
+            rb_other.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked) {
+                    alergi = "Other";
+                    et_lainnya.setVisibility(View.VISIBLE);
+                }
+            });
+            rb_tidak_ada.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(isChecked) {
+                    alergi = "Tidak ada";
+                    et_lainnya.setVisibility(View.GONE);
+                }
+            });
             pDialog = new ProgressDialog(this);
             pDialog.setMessage("Harap tunggu...");
         }
@@ -399,6 +426,13 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
         if (status.size() == 0) {
             Toast.makeText(this, "Harap isi status anda dalam Simposium", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if (alergi.equals("Other") && et_lainnya.getText().toString().isEmpty()) {
+            et_lainnya.setError("Harap isi jenis alergi");
+            return;
+        } else {
+            alergi = et_lainnya.getText().toString();
         }
 
         if (imgUpload) {

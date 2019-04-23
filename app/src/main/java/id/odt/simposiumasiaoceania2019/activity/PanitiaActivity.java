@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -79,6 +80,7 @@ public class PanitiaActivity extends AppCompatActivity implements View.OnClickLi
         actionList.clear();
         BaseApp.db
                 .collection("action")
+                .orderBy("created_at", Query.Direction.DESCENDING)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     actionList.clear();
                     for (DocumentSnapshot documentSnapshot:queryDocumentSnapshots) {

@@ -64,6 +64,16 @@
                 android:layout_height="wrap_content"
                 android:text="Toilet"/>
             <RadioButton
+                android:id="@+id/rb_makan_siang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Makan siang"/>
+            <RadioButton
+                android:id="@+id/rb_makan_malam"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Makan malam"/>
+            <RadioButton
                 android:id="@+id/rb_sakit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,6 +83,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lainnya"/>
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/et_lainnya"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:hint="Lainnya"/>
         </RadioGroup>
 
         <LinearLayout

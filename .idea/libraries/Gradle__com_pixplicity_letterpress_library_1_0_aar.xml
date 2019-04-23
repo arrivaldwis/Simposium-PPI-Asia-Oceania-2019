@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.pixplicity.letterpress:library:1.0@aar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../gradle-4.6/caches/transforms-2/files-2.1/62b13b3a9826eb9351a638f4126584ec/res" />
-      <root url="jar://$PROJECT_DIR$/../../../../gradle-4.6/caches/transforms-2/files-2.1/62b13b3a9826eb9351a638f4126584ec/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../gradle-4.6/caches/transforms-2/files-2.1/62b13b3a9826eb9351a638f4126584ec/res" />
+      <root url="jar://$PROJECT_DIR$/../../gradle-4.6/caches/transforms-2/files-2.1/62b13b3a9826eb9351a638f4126584ec/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../../../../gradle-4.6/caches/modules-2/files-2.1/com.pixplicity.letterpress/library/1.0/2c6a171432505e9a535f7debaa1cb191b057b92a/library-1.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../gradle-4.6/caches/modules-2/files-2.1/com.pixplicity.letterpress/library/1.0/2c6a171432505e9a535f7debaa1cb191b057b92a/library-1.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

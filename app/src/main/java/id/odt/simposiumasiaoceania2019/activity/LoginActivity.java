@@ -56,9 +56,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
+
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+
+        if(password.isEmpty()) {
+            mPasswordView.setError("Password can not be empty");
+            return;
+        }
 
         boolean cancel = false;
         View focusView = null;
@@ -104,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginProcess() {
-        tvCreateWallet.setText("Please wait");
+        tvCreateWallet.setText("Harap tunggu");
         pbUpload.setVisibility(View.VISIBLE);
         mEmailSignInButton.setEnabled(false);
 
