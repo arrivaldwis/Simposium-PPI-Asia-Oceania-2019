@@ -19,8 +19,10 @@ public class UserModel {
     public ArrayList<String> status;
     public String universitas;
     public boolean vege;
+    public boolean net_dinner;
     public String wechat;
     public String whatsapp;
+    public String email;
 
     public UserModel() {
     }
@@ -28,7 +30,7 @@ public class UserModel {
     public UserModel(String uid, boolean approve, String alergi, String bukti_url, long created_at,
                      String gender, String jurusan, String kota, String nama, String negara,
                      String no_passport, String nohp, boolean puasa, ArrayList<String> status,
-                     String universitas, boolean vege, String wechat, String whatsapp) {
+                     String universitas, boolean vege, String wechat, String whatsapp, boolean net_dinner) {
         this.uid = uid;
         this.approve = approve;
         this.alergi = alergi;
@@ -47,6 +49,48 @@ public class UserModel {
         this.vege = vege;
         this.wechat = wechat;
         this.whatsapp = whatsapp;
+        this.net_dinner = net_dinner;
+    }
+
+    public boolean isNet_dinner() {
+        return net_dinner;
+    }
+
+    public void setNet_dinner(boolean net_dinner) {
+        this.net_dinner = net_dinner;
+    }
+
+    public UserModel(String uid, boolean approve, String alergi, String bukti_url, long created_at,
+                     String gender, String jurusan, String kota, String nama, String negara,
+                     String no_passport, String nohp, boolean puasa, ArrayList<String> status,
+                     String universitas, boolean vege, String wechat, String whatsapp, String email) {
+        this.uid = uid;
+        this.approve = approve;
+        this.alergi = alergi;
+        this.bukti_url = bukti_url;
+        this.created_at = created_at;
+        this.gender = gender;
+        this.jurusan = jurusan;
+        this.kota = kota;
+        this.nama = nama;
+        this.negara = negara;
+        this.no_passport = no_passport;
+        this.nohp = nohp;
+        this.puasa = puasa;
+        this.status = status;
+        this.universitas = universitas;
+        this.vege = vege;
+        this.wechat = wechat;
+        this.whatsapp = whatsapp;
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUid() {

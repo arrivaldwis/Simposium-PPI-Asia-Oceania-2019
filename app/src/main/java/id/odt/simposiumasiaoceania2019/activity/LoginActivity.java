@@ -1,5 +1,7 @@
 package id.odt.simposiumasiaoceania2019.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.pixplicity.fontview.FontAppCompatTextView;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -52,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         });
 
+        //showAllPanitia();
+        //showAllPeserta();
         mEmailSignInButton.setOnClickListener(view -> attemptLogin());
     }
 
@@ -152,6 +158,49 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     // ...
+                });
+    }
+
+    private String user = "";
+    private void showAllPeserta() {
+        BaseApp.db
+                .collection("user")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot:queryDocumentSnapshots) {
+                            String nama = documentSnapshot.getData().get("nama").toString();
+                            String email = documentSnapshot.getData().get("email").toString();
+                            String uid = documentSnapshot.getData().get("uid").toString();
+                            user += nama+","+email+","+uid+"\n";
+                        }
+
+                        Log.d("allUser", user);
+                    }
+                });
+    }
+
+    private String panitia = "";
+    private void showAllPanitia() {
+        BaseApp.db
+                .collection("panitia")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot:queryDocumentSnapshots) {
+                            String nama = documentSnapshot.getData().get("nama").toString();
+                            String email = documentSnapshot.getData().get("email").toString();
+                            String uid = documentSnapshot.getData().get("uid").toString();
+                            panitia += nama+","+email+","+uid+"\n";
+                        }
+
+                        Log.d("allPanitia", panitia);
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("peserta", panitia);
+                        clipboard.setPrimaryClip(clip);
+                    }
                 });
     }
 }

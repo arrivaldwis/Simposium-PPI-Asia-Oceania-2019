@@ -85,7 +85,7 @@
             style="@style/FontTextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Simposium PPI\nAsia Oceania 2019"
+            android:text="Simposium PPI\nAsia Oseania 2019"
             android:layout_gravity="center"
             android:gravity="center"
             android:textSize="22dp"

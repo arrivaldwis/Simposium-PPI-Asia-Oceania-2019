@@ -17,15 +17,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activity.QRScanActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activity.PanitiaActivity"
+        <activity android:name=".activity.Excel2FirestoreActivity">
+        </activity>
+        <activity
+            android:name=".activity.QRScanActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.AdminActivity"
+        <activity
+            android:name=".activity.RecordsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.UserApproveActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait">
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

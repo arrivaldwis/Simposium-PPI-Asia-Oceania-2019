@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,8 +11,10 @@
     <include layout="@layout/toolbar"/>
 
     <RelativeLayout
+        android:id="@+id/rl_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cardToolbar">
 
         <android.support.v7.widget.CardView
             android:id="@+id/cv_static"
@@ -129,7 +131,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_below="@+id/rl_card">
 
         <RelativeLayout
             android:id="@+id/rl_empty"
@@ -164,28 +167,54 @@
             android:layout_centerInParent="true"
             android:visibility="gone">
 
+            <com.pixplicity.fontview.FontAppCompatTextView
+                android:id="@+id/tv_perlihatkan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="4dp"
+                android:text="Perlihatkan QR Code kepada Panitia"
+                android:textColor="@color/ef_grey" />
+
             <ImageView
                 android:id="@+id/img_qrcode"
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                android:layout_below="@+id/tv_perlihatkan"/>
 
-            <com.pixplicity.fontview.FontAppCompatTextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/btn_screenshot"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/img_qrcode"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="4dp"
-                android:text="Perlihatkan QR Code kepada Panitia"
-                android:textColor="@color/ef_grey" />
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:background="@drawable/button_blue"
+                android:orientation="horizontal"
+                android:layout_below="@+id/img_qrcode">
+
+                <com.pixplicity.fontview.FontAppCompatTextView
+                    android:id="@+id/btn_save"
+                    style="@style/FontTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="SIMPAN QR CODE"
+                    android:textAllCaps="true"
+                    android:textColor="#2e65f7"
+                    android:textSize="14dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
         </RelativeLayout>
 
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/ll_daftar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -848,4 +877,14 @@
         </android.support.v4.widget.NestedScrollView>
     </RelativeLayout>
 
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ef_ic_camera_white"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
+</RelativeLayout>

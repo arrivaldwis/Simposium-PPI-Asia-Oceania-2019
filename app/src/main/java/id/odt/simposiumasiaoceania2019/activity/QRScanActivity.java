@@ -71,6 +71,7 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
 
     private String action = "registrasi";
     private String nama = "";
+    private String textAdditional = "";
     private MaterialEditText et_lainnya;
 
     private void showDialogAction(String result) {
@@ -81,6 +82,8 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
         RadioButton rb_toilet = dialog.findViewById(R.id.rb_toilet);
         RadioButton rb_sakit = dialog.findViewById(R.id.rb_sakit);
         RadioButton rb_lainnya = dialog.findViewById(R.id.rb_lain);
+        RadioButton rb_makan_pagi = dialog.findViewById(R.id.rb_makan_pagi);
+        RadioButton rb_networking_dinner = dialog.findViewById(R.id.rb_networking_dinner);
         RadioButton rb_makan_siang = dialog.findViewById(R.id.rb_makan_siang);
         RadioButton rb_makan_malam = dialog.findViewById(R.id.rb_makan_malam);
         et_lainnya = dialog.findViewById(R.id.et_lainnya);
@@ -90,20 +93,62 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
         rb_toilet.setOnCheckedChangeListener(this);
         rb_sakit.setOnCheckedChangeListener(this);
         rb_lainnya.setOnCheckedChangeListener(this);
+        rb_makan_pagi.setOnCheckedChangeListener(this);
         rb_makan_siang.setOnCheckedChangeListener(this);
         rb_makan_malam.setOnCheckedChangeListener(this);
+        rb_networking_dinner.setOnCheckedChangeListener(this);
 
         BaseApp.db
                 .collection("user")
-                .whereEqualTo("uid", result)
+                .whereEqualTo("email", result)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.getResult() != null) {
                         if (task.getResult().size() > 0) {
                             for (DocumentSnapshot documentSnapshot : task.getResult()) {
                                 nama = documentSnapshot.getData().get("nama").toString();
-                                tv_nama.setText(nama);
+                                String alergi = documentSnapshot.getData().get("alergi").toString();
+                                boolean puasa = (boolean) documentSnapshot.getData().get("puasa");
+                                boolean vege = (boolean) documentSnapshot.getData().get("vege");
+                                boolean net_dinner = (boolean) documentSnapshot.getData().get("net_dinner");
+
+                                if (puasa)
+                                    rb_makan_siang.setVisibility(View.GONE);
+                                else
+                                    rb_makan_pagi.setVisibility(View.GONE);
+
+                                if (net_dinner)
+                                    rb_networking_dinner.setVisibility(View.VISIBLE);
+                                else
+                                    rb_networking_dinner.setVisibility(View.GONE);
+
+                                if (vege)
+                                    textAdditional += "\nVegan: Ya";
+                                else
+                                    textAdditional += "\nVegan: Tidak";
+
+                                if (!alergi.isEmpty())
+                                    textAdditional += "\nAlergi: " + alergi;
+
+                                tv_nama.setText(nama + textAdditional);
+
                             }
+                        } else {
+                            BaseApp.db
+                                    .collection("panitia")
+                                    .whereEqualTo("email", result)
+                                    .get()
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.getResult() != null) {
+                                            if (task1.getResult().size() > 0) {
+                                                for (DocumentSnapshot documentSnapshot : task1.getResult()) {
+                                                    String email = documentSnapshot.getData().get("email").toString();
+                                                    nama = documentSnapshot.getData().get("nama").toString();
+                                                    tv_nama.setText(nama);
+                                                }
+                                            }
+                                        }
+                                    });
                         }
                     }
                 });
@@ -112,7 +157,7 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
             pDialog.show();
             btn_submit.setEnabled(false);
 
-            if(action.equals("lainnya")) {
+            if (action.equals("lainnya")) {
                 action = et_lainnya.getText().toString().toLowerCase();
             }
 
@@ -123,20 +168,20 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
             actions.put("panitia_uid", currentUser.getUid());
             actions.put("created_at", System.currentTimeMillis());
 
-            if(action.toLowerCase().contains("makan")) {
+            if (action.toLowerCase().contains("makan") || action.toLowerCase().contains("sarapan")) {
                 BaseApp.db
                         .collection("action")
-                        .whereEqualTo("uid", result)
+                        .whereEqualTo("email", result)
                         .whereEqualTo("action", action)
                         .get()
                         .addOnCompleteListener(task -> {
-                            if(task.getResult()!=null) {
-                                if(task.getResult().size()>0) {
-                                    for (DocumentSnapshot documentSnapshot:task.getResult()) {
+                            if (task.getResult() != null) {
+                                if (task.getResult().size() > 0) {
+                                    for (DocumentSnapshot documentSnapshot : task.getResult()) {
                                         long created_at = Long.parseLong(documentSnapshot.getData().get("created_at").toString());
-                                        if(Util.getDate(created_at, "dd/MM/yyyy")
+                                        if (Util.getDate(created_at, "dd/MM/yyyy")
                                                 .equals(Util.getDate(System.currentTimeMillis(), "dd/MM/yyyy"))) {
-                                            Toast.makeText(QRScanActivity.this, "Maaf, peserta telah "+action+" sebelumnya", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(QRScanActivity.this, "Maaf, peserta telah " + action + " sebelumnya", Toast.LENGTH_LONG).show();
                                             pDialog.dismiss();
                                             dialog.dismiss();
                                             mScannerView.resumeCameraPreview(QRScanActivity.this);
@@ -167,7 +212,7 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
                 .collection("action")
                 .add(actions)
                 .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
+                    if (task.isSuccessful()) {
                         pDialog.dismiss();
                         Toast.makeText(QRScanActivity.this, "Perintah berhasil dikirim", Toast.LENGTH_SHORT).show();
                         finish();
@@ -179,7 +224,7 @@ public class QRScanActivity extends AppCompatActivity implements ZXingScannerVie
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             action = buttonView.getText().toString().toLowerCase();
-            if(action.equals("lainnya")) {
+            if (action.equals("lainnya")) {
                 et_lainnya.setVisibility(View.VISIBLE);
             } else {
                 et_lainnya.setVisibility(View.GONE);

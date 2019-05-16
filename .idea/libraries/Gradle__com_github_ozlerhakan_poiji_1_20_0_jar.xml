@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.ozlerhakan:poiji:1.20.0@jar">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../gradle-4.6/caches/modules-2/files-2.1/com.github.ozlerhakan/poiji/1.20.0/ed9c092a011db64450ff57d4ad803be072b0029a/poiji-1.20.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../gradle-4.6/caches/modules-2/files-2.1/com.github.ozlerhakan/poiji/1.20.0/e14ce2a2b6cc2dddba319eb194c1ad855e72c526/poiji-1.20.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

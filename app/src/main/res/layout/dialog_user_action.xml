@@ -30,7 +30,7 @@
             android:id="@+id/tv_peserta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Arrival"
+            android:text="Getting data.."
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -64,6 +64,11 @@
                 android:layout_height="wrap_content"
                 android:text="Toilet"/>
             <RadioButton
+                android:id="@+id/rb_makan_pagi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sarapan atau Sahur"/>
+            <RadioButton
                 android:id="@+id/rb_makan_siang"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,6 +78,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Makan malam"/>
+            <RadioButton
+                android:id="@+id/rb_networking_dinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Networking Dinner"/>
             <RadioButton
                 android:id="@+id/rb_sakit"
                 android:layout_width="wrap_content"

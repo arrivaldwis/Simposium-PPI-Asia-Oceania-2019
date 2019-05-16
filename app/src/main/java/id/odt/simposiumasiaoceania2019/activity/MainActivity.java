@@ -3,16 +3,22 @@ package id.odt.simposiumasiaoceania2019.activity;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -53,9 +59,11 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +76,7 @@ import id.odt.simposiumasiaoceania2019.BaseApp;
 import id.odt.simposiumasiaoceania2019.R;
 import id.odt.simposiumasiaoceania2019.util.Util;
 
-public class MainActivity extends AppCompatActivity implements Validator.ValidationListener, CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements Validator.ValidationListener, CompoundButton.OnCheckedChangeListener, View.OnClickListener, PermissionListener {
 
     @BindView(R.id.tv_email)
     FontAppCompatTextView tv_email;
@@ -153,14 +161,26 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
     ImageView img_foto2;
     @BindView(R.id.img_logout)
     ImageView img_logout;
+    @BindView(R.id.img_approve)
+    ImageView img_approve;
+    @BindView(R.id.img_activity)
+    ImageView img_activity;
+    @BindView(R.id.btn_back)
+    ImageView btn_back;
     @BindView(R.id.email_sign_in_button)
     LinearLayout email_sign_in_button;
     @BindView(R.id.et_lainnya)
     MaterialEditText et_lainnya;
+    @BindView(R.id.btn_screenshot)
+    LinearLayout btn_screenshot;
+    @BindView(R.id.btn_save)
+    FontAppCompatTextView btn_save;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     private ArrayList<String> status = new ArrayList<>();
     private String img_uploaded_url = "";
-    private String gender = "M";
+    private String gender = "L";
     private String alergi = "Tidak ada";
     private boolean puasa = true;
     private boolean vege = false;
@@ -183,14 +203,27 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
             startActivity(i);
             finish();
         } else {
+            TedPermission.with(this)
+                    .setPermissionListener(this)
+                    .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                    .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA)
+                    .check();
+
             dialogLoading();
             checkRole();
+            btn_back.setVisibility(View.GONE);
             tv_email.setText(currentUser.getEmail());
             validator = new Validator(this);
             validator.setValidationListener(this);
             email_sign_in_button.setOnClickListener(this);
             img_logout.setOnClickListener(this);
+            img_activity.setOnClickListener(this);
+            img_approve.setOnClickListener(this);
             ll_foto.setOnClickListener(this);
+            fab.setOnClickListener(this);
+            btn_screenshot.setOnClickListener(this);
             ck_delegasi.setOnCheckedChangeListener(this);
             ck_peninjau.setOnCheckedChangeListener(this);
             ck_peninjau_plus.setOnCheckedChangeListener(this);
@@ -248,23 +281,41 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
                         if (task12.getResult().size() > 0) {
                             for (DocumentSnapshot documentSnapshot : task12.getResult()) {
                                 role = documentSnapshot.getData().get("role").toString();
+                                BaseApp.db
+                                        .collection("panitia")
+                                        .document(documentSnapshot.getId())
+                                        .update("uid", currentUser.getUid());
                             }
 
                             if (role.toLowerCase().equals("panitia")) {
-                                Intent in = new Intent(MainActivity.this, PanitiaActivity.class);
-                                startActivity(in);
-                                finish();
+                                img_activity.setVisibility(View.VISIBLE);
+                                img_approve.setVisibility(View.GONE);
+                                tv_status.setText("Panitia");
+                                ll_daftar.setVisibility(View.GONE);
+                                tv_lengkapi.setVisibility(View.GONE);
+                                rl_empty.setVisibility(View.GONE);
+                                fab.setVisibility(View.VISIBLE);
+                                generateQRCode();
                                 dialog.dismiss();
                             } else if (role.toLowerCase().equals("admin")) {
-                                Intent in = new Intent(MainActivity.this, AdminActivity.class);
-                                startActivity(in);
-                                finish();
+                                img_approve.setVisibility(View.VISIBLE);
+                                img_activity.setVisibility(View.VISIBLE);
+                                tv_status.setText("Administrator");
+                                ll_daftar.setVisibility(View.GONE);
+                                tv_lengkapi.setVisibility(View.GONE);
+                                rl_empty.setVisibility(View.GONE);
+                                fab.setVisibility(View.VISIBLE);
+                                generateQRCode();
                                 dialog.dismiss();
                             }
                         } else {
+                            img_approve.setVisibility(View.GONE);
+                            img_activity.setVisibility(View.GONE);
                             checkUserApprove();
                         }
                     } else {
+                        img_approve.setVisibility(View.GONE);
+                        img_activity.setVisibility(View.GONE);
                         checkUserApprove();
                     }
                 });
@@ -273,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
     private void checkUserApprove() {
         BaseApp.db
                 .collection("user")
-                .whereEqualTo("uid", currentUser.getUid())
+                .whereEqualTo("email", currentUser.getEmail())
                 .limit(1)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     if (queryDocumentSnapshots != null) {
@@ -326,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
     }
 
     private void generateQRCode() {
-        String text = currentUser.getUid(); // Whatever you need to encode in the QR code
+        String text = currentUser.getEmail(); // Whatever you need to encode in the QR code
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200);
@@ -475,14 +526,15 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
 
     @Override
     public void onClick(View v) {
+        Intent intent;
         switch (v.getId()) {
             case R.id.email_sign_in_button:
                 validator.validate();
                 break;
             case R.id.img_logout:
                 BaseApp.mAuth.signOut();
-                Intent intent1 = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent1);
+                intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
                 finish();
                 break;
             case R.id.ll_foto:
@@ -496,6 +548,63 @@ public class MainActivity extends AppCompatActivity implements Validator.Validat
                         .imageDirectory("Camera") // directory name for captured image  ("Camera" folder by default)
                         .start();
                 break;
+            case R.id.btn_screenshot:
+                takeScreenshot();
+                break;
+            case R.id.btn_save:
+                takeScreenshot();
+                break;
+            case R.id.fab:
+                intent = new Intent(MainActivity.this, QRScanActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.img_approve:
+                intent = new Intent(MainActivity.this, UserApproveActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.img_activity:
+                intent = new Intent(MainActivity.this, RecordsActivity.class);
+                startActivity(intent);
+                break;
         }
+    }
+
+    private void takeScreenshot() {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg";
+
+            // create bitmap screen capture
+            View v1 = getWindow().getDecorView().getRootView();
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            Toast.makeText(this, "Identitas QR Code sudah disimpan pada folder Screenshot", Toast.LENGTH_LONG).show();
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void onPermissionGranted() {
+
+    }
+
+    @Override
+    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+
     }
 }
